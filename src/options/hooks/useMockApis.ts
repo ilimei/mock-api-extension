@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import mockDataManager, { MockApi } from '../../common/mockDataManager';
+import mockDataManager, { MockApi } from '../../common/mockDataManagerClient';
 
 export const useMockApis = (projectId: string) => {
   const [mockApis, setMockApis] = useState<MockApi[]>([]);
@@ -25,7 +25,7 @@ export const useMockApis = (projectId: string) => {
 
   const addMockApi = async (apiData: Omit<MockApi, 'id' | 'projectId' | 'createdAt'>) => {
     try {
-      const newApi = await mockDataManager.addMockApi(projectId, apiData);
+      const newApi = await mockDataManager.addMockApi({ projectId, apiData });
       setMockApis(prevApis => [...prevApis, newApi]);
       return newApi;
     } catch (error) {
@@ -36,9 +36,9 @@ export const useMockApis = (projectId: string) => {
 
   const updateMockApi = async (apiId: string, apiData: Partial<MockApi>) => {
     try {
-      const updatedApi = await mockDataManager.updateMockApi(projectId, apiId, apiData);
+      const updatedApi = await mockDataManager.updateMockApi({ projectId, apiId, apiData });
       if (updatedApi) {
-        setMockApis(prevApis => 
+        setMockApis(prevApis =>
           prevApis.map(api => api.id === apiId ? updatedApi : api)
         );
       }
@@ -51,7 +51,7 @@ export const useMockApis = (projectId: string) => {
 
   const deleteMockApi = async (apiId: string) => {
     try {
-      const success = await mockDataManager.deleteMockApi(projectId, apiId);
+      const success = await mockDataManager.deleteMockApi({ projectId, apiId });
       if (success) {
         setMockApis(prevApis => prevApis.filter(api => api.id !== apiId));
       }
@@ -64,9 +64,9 @@ export const useMockApis = (projectId: string) => {
 
   const toggleApiEnabled = async (apiId: string) => {
     try {
-      const updatedApi = await mockDataManager.toggleApiEnabled(projectId, apiId);
+      const updatedApi = await mockDataManager.toggleApiEnabled({ projectId, apiId });
       if (updatedApi) {
-        setMockApis(prevApis => 
+        setMockApis(prevApis =>
           prevApis.map(api => api.id === apiId ? updatedApi : api)
         );
       }
@@ -77,12 +77,12 @@ export const useMockApis = (projectId: string) => {
     }
   };
 
-  return { 
-    mockApis, 
+  return {
+    mockApis,
     loading,
-    addMockApi, 
-    updateMockApi, 
-    deleteMockApi, 
-    toggleApiEnabled 
+    addMockApi,
+    updateMockApi,
+    deleteMockApi,
+    toggleApiEnabled
   };
 };

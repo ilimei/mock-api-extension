@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { List, Card, Button, Form, Empty, Typography, Space, Switch } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
-import mockDataManager, { IProject as ProjectType } from '../../common/mockDataManager';
+import mockDataManager, { IProject as ProjectType } from '../../common/mockDataManagerClient';
 import ProjectForm from '../components/ProjectForm';
 
 const { Title } = Typography;
@@ -64,9 +64,9 @@ const Project: React.FC = () => {
 
       if (isEditing && currentProjectId) {
         // Update existing project
-        const updatedProject = await mockDataManager.updateProject(currentProjectId, values);
+        const updatedProject = await mockDataManager.updateProject({ id: currentProjectId, projectData: values });
         if (updatedProject) {
-          setProjects(prevProjects => 
+          setProjects(prevProjects =>
             prevProjects.map(project => project.id === currentProjectId ? updatedProject : project)
           );
         }
@@ -89,9 +89,9 @@ const Project: React.FC = () => {
   };
 
   const handleToggleEnabled = async (checked: boolean, project: ProjectType) => {
-    const updatedProject = await mockDataManager.updateProject(project.id, { enabled: checked });
+    const updatedProject = await mockDataManager.updateProject({ id: project.id, projectData: { enabled: checked } });
     if (updatedProject) {
-      setProjects(prevProjects => 
+      setProjects(prevProjects =>
         prevProjects.map(p => p.id === project.id ? updatedProject : p)
       );
     }
@@ -159,7 +159,7 @@ const Project: React.FC = () => {
         />
       )}
 
-      <ProjectForm 
+      <ProjectForm
         form={form}
         isModalVisible={isModalVisible}
         isEditing={isEditing}

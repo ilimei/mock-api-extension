@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table, Tag, Switch, Button, Space, Popconfirm } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import type { MockApi } from '../../common/mockDataManager';
+import type { MockApi } from '@/common/mockDataManagerClient';
 
 interface ApiTableProps {
   apis: MockApi[];

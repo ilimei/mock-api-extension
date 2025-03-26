@@ -1,7 +1,7 @@
 import type { IExtensionApi, IMockResponse } from '@/common/api';
-import type { IProject } from '@/common/mockDataManager';
+import type { IProject } from '@/common/mockDataManagerClient';
 import { Server } from '@/common/request';
-import mockDataManager from '@/common/mockDataManager';
+import mockDataManager from '@/background/mockDataManager';
 
 class BackgroundServer extends Server implements IExtensionApi {
   ctx = {

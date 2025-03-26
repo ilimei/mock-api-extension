@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import { Menu, Switch, Typography, Layout, Space, Divider, Button } from 'antd';
+import Switch from 'antd/es/switch';
+import Typography from 'antd/es/typography';
+import Layout from 'antd/es/layout';
+import Space from 'antd/es/space';
+import Divider from 'antd/es/divider';
+import Button from 'antd/es/button';
 import {
-  PoweroffOutlined,
   AppstoreOutlined,
   SettingOutlined,
   PlayCircleOutlined,
   PauseCircleOutlined
 } from '@ant-design/icons';
-import mockDataManaer, { IProject } from '../common/mockDataManager';
+import mockDataManaer, { IProject } from '../common/mockDataManagerClient';
 
 const { Header, Content } = Layout;
 const { Title } = Typography;
@@ -38,7 +42,6 @@ export default function App() {
         // Extract domain from URL
         try {
           const urlObj = new URL(url);
-          console.info('------------', urlObj)
           const projects = (await mockDataManaer.getProjects()).filter((project) => {
             return url.startsWith(project.domain);
           });

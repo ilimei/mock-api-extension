@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import mockDataManager, { IProject } from '../../common/mockDataManager';
+import mockDataManager, { IProject } from '../../common/mockDataManagerClient';
 
 export const useProject = (id: string) => {
   const [project, setProject] = useState<IProject | null>(null);
@@ -23,7 +23,7 @@ export const useProject = (id: string) => {
 
   const toggleProjectEnabled = async () => {
     if (!project) return;
-    
+
     try {
       const updatedProject = await mockDataManager.toggleProjectEnabled(id);
       if (updatedProject) {
@@ -46,7 +46,7 @@ export const useProject = (id: string) => {
 
   const updateProject = async (projectData: Partial<IProject>) => {
     try {
-      const updatedProject = await mockDataManager.updateProject(id, projectData);
+      const updatedProject = await mockDataManager.updateProject({ id, projectData });
       if (updatedProject) {
         setProject(updatedProject);
       }

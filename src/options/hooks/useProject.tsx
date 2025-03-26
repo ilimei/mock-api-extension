@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import mockDataManager, { Project } from '../../common/mockDataManager';
+import mockDataManager, { IProject } from '../../common/mockDataManagerClient';
 
 export const useProject = (projectId: string) => {
-  const [project, setProject] = useState<Project | null>(null);
+  const [project, setProject] = useState<IProject | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,8 +28,8 @@ export const useProject = (projectId: string) => {
 
     try {
       const updatedProject = { ...project, enabled: checked };
-      mockDataManager.updateProject(projectId, updatedProject);
-      
+      mockDataManager.updateProject({ id: projectId, projectData: updatedProject });
+
       // Update local state
       setProject(updatedProject);
     } catch (error) {
