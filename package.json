@@ -2,7 +2,7 @@
   "name": "mock-api-extension",
   "version": "1.0.0",
   "description": "A Chrome extension to mock API responses.",
-  "main": "dist/background.js",
+  "private": true,
   "scripts": {
     "dev": "node build.mjs --watch",
     "build": "vite build",
@@ -22,6 +22,14 @@
     "react-router-dom": "^5.3.4",
     "typescript": "^5.0.0",
     "vite": "^6.2.2",
-    "vite-plugin-singlefile": "^2.2.0"
-  }
+    "vite-plugin-singlefile": "^2.2.0",
+    "@codemirror/commands": "^6.8.1",
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/language": "^6.11.0",
+    "@codemirror/lint": "^6.8.5",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.36.5",
+    "@lezer/highlight": "^1.2.1"
+  },
+  "repository": "git@github.com:ilimei/mock-api-extension.git"
 }

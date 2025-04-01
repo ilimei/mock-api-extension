@@ -13,7 +13,8 @@ import {
   Empty,
   Spin,
   Popconfirm,
-  Form
+  Form,
+  message
 } from 'antd';
 import {
   ArrowLeftOutlined,
@@ -21,12 +22,15 @@ import {
   DeleteOutlined,
   ApiOutlined,
   SettingOutlined,
+  SaveOutlined,
 } from '@ant-design/icons';
 import { useProject } from '../hooks/useProject';
 import { useMockApis } from '../hooks/useMockApis';
 import ApiTable from '../components/ApiTable';
 import ApiFormModal from '../components/ApiFormModal';
 import ProjectForm from '../components/ProjectForm';
+import JsonEditor from '../components/JsonEditor';
+import { MockApi } from '@/common/mockDataManagerClient';
 
 const { Title, Text } = Typography;
 const { TabPane } = Tabs;
@@ -34,6 +38,7 @@ const { TabPane } = Tabs;
 const ProjectDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const history = useHistory();
+  const [messageApi, contextHolder] = message.useMessage();
   const { project, loading, toggleProjectEnabled, deleteProject, updateProject } = useProject(id);
   const { mockApis, addMockApi, updateMockApi, deleteMockApi, toggleApiEnabled } = useMockApis(id);
 
@@ -107,6 +112,32 @@ const ProjectDetail: React.FC = () => {
     setEditingApi(null);
   };
 
+  const refreshMockApis = (newApis: MockApi[]) => {
+    // 按照 path 和 method 作为 key
+    // 对比mockApis 和 newApis
+    // 如果有新增的api，添加到mockApis  调用 addMockApi 
+    // 如果有删除的api，删除mockApis 调用 deleteMockApi
+    // 如果有修改的api，更新mockApis 调用 updateMockApi
+    // 这里的逻辑需要根据实际需求来实现
+    const toKey = (api: MockApi) => `${api.path}_${api.method}`;
+    const deleteApis = mockApis.filter(api => !newApis.find(newApi => toKey(newApi) === toKey(api)));
+    const addApis = newApis.filter(api => !mockApis.find(oldApi => toKey(oldApi) === toKey(api)));
+    const updateApis = newApis.filter(api => {
+      const oldApi = mockApis.find(oldApi => toKey(oldApi) === toKey(api));
+      return oldApi && JSON.stringify(oldApi) !== JSON.stringify(api);
+    });
+    deleteApis.forEach(api => {
+      deleteMockApi(api.id);
+    });
+    addApis.forEach(api => {
+      addMockApi(api);
+    });
+    updateApis.forEach(api => {
+      updateMockApi(api.id, api);
+    });
+    messageApi.success('Mock APIs updated successfully');
+  };
+
   if (loading) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
@@ -135,6 +166,7 @@ const ProjectDetail: React.FC = () => {
 
   return (
     <div style={{ padding: '24px' }}>
+      {contextHolder}
       <Breadcrumb style={{ marginBottom: '16px' }}>
         <Breadcrumb.Item>
           <a onClick={handleBackClick}>Projects</a>
@@ -220,7 +252,33 @@ const ProjectDetail: React.FC = () => {
             }
             key="2"
           >
-            <p>Project settings will be displayed here.</p>
+            <div style={{ marginTop: '16px' }}>
+              <Title level={4}>JSON Configuration</Title>
+              <Text type="secondary" style={{ marginBottom: '16px', display: 'block' }}>
+                Edit the JSON configuration for your mock APIs
+              </Text>
+              <div style={{ border: '1px solid #d9d9d9', borderRadius: '2px', overflow: 'auto', maxHeight: '500px' }}>
+                <JsonEditor
+                  value={JSON.stringify(mockApis, null, 2)}
+                  onChange={(newValue) => {
+                      // Handle JSON changes here
+                  }}
+                  actions={[
+                    {
+                      key: 'save',
+                      label: 'Save',
+                      icon: <SaveOutlined />,
+                      onClick: (editor, value) => {
+                        // Handle save action
+                        refreshMockApis(JSON.parse(value));
+                      },
+                    },
+                  ]}
+                  height="400px"
+                  autoFormat={true}
+                />
+              </div>
+            </div>
           </TabPane>
         </Tabs>
       </Card>

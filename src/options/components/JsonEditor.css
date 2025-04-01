@@ -1,0 +1,37 @@
+.json-editor {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.json-editor-toolbar {
+  display: flex;
+  padding: 4px;
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+}
+
+.format-button {
+  padding: 4px 8px;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.format-button:hover:not(:disabled) {
+  background-color: #f0f0f0;
+}
+
+.format-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.editor-container {
+  flex: 1;
+  min-height: 100px;
+}
