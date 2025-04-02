@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { List, Card, Button, Form, Empty, Typography, Space, Switch, message, Tooltip } from 'antd';
-import { PlusOutlined, ImportOutlined, ExportOutlined } from '@ant-design/icons';
+import { List, Card, Button, Form, Empty, Typography, Space, Switch, message, Tooltip, Popconfirm } from 'antd';
+import { PlusOutlined, ImportOutlined, ExportOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import mockDataManager, { IProject as ProjectType } from '../../common/mockDataManagerClient';
 import ProjectForm from '../components/ProjectForm';
@@ -270,6 +270,19 @@ const Project: React.FC = () => {
     }
   };
 
+  const handleDeleteProject = async (e: React.MouseEvent, project: ProjectType) => {
+    e.stopPropagation(); // Prevent card click event
+    
+    try {
+      await mockDataManager.deleteProject(project.id);
+      setProjects(prevProjects => prevProjects.filter(p => p.id !== project.id));
+      message.success(`Project "${project.name}" deleted successfully`);
+    } catch (error) {
+      console.error('Delete project failed:', error);
+      message.error('Failed to delete project');
+    }
+  };
+
   return (
     <div style={{ padding: '24px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
@@ -331,6 +344,23 @@ const Project: React.FC = () => {
                         icon={<ExportOutlined />}
                         onClick={(e) => handleExportProject(e, project)}
                       />
+                    </Tooltip>
+                    <Tooltip title="Delete project">
+                      <Popconfirm
+                        title="Are you sure to delete this project?"
+                        onConfirm={(e) => handleDeleteProject(e, project)}
+                        okText="Yes"
+                        cancelText="No"
+                        onPopupClick={(e) => e.stopPropagation()}
+                      >
+                        <Button
+                          type="text"
+                          size="small"
+                          danger
+                          icon={<DeleteOutlined />}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </Popconfirm>
                     </Tooltip>
                     <Button
                       type="text"
