@@ -1,6 +1,8 @@
 
 import { Server } from '@/common/request';
 import backgroundClient, { IExtensionApi } from '@/common/api';
+import mockDataManagerClient from '@/common/mockDataManagerClient';
+import { matchDomain } from '@/common/utils';
 
 class ContentServer extends Server implements IExtensionApi {
 
@@ -48,7 +50,16 @@ try {
     // Otherwise default to true
     const domainEnabled = result[domain] !== undefined ? result[domain] : true;
     if (domainEnabled) {
-      injectInterceptor();
+      mockDataManagerClient.getProjects().then(projects => {
+        if (projects.some(project => {
+          if (matchDomain(project.domain, location.origin)) {
+            return true;
+          }
+          return false;
+        })) {
+          injectInterceptor();
+        }
+      });
     }
   });
 } catch (e) {

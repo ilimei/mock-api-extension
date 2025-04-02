@@ -2,6 +2,7 @@ import type { IExtensionApi, IMockResponse } from '@/common/api';
 import type { IProject } from '@/common/mockDataManagerClient';
 import { Server } from '@/common/request';
 import mockDataManager from '@/background/mockDataManager';
+import { matchPath } from '@/common/utils';
 
 class BackgroundServer extends Server implements IExtensionApi {
   ctx = {
@@ -154,7 +155,7 @@ class BackgroundServer extends Server implements IExtensionApi {
     const apis = (await Promise.all(projects.map(p => mockDataManager.getMockApis(p.id)))).flatMap(a => a);
     const requestUrl = new URL(data.input as string, url);
     const method = data.init?.method || 'GET';
-    const api = apis.find(a => requestUrl.pathname === a.path && a.method === method);
+    const api = apis.find(api => matchPath(api.path, requestUrl.pathname) && api.method === method);
 
     if (api) {
       return {

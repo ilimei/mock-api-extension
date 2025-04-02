@@ -6,11 +6,19 @@
   "scripts": {
     "dev": "node build.mjs --watch",
     "build": "vite build",
+    "test": "vitest",
     "serve": "vite preview"
   },
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "@codemirror/commands": "^6.8.1",
+    "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/language": "^6.11.0",
+    "@codemirror/lint": "^6.8.5",
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.36.5",
+    "@lezer/highlight": "^1.2.1",
     "@types/chrome": "^0.0.310",
     "@types/node": "^22.13.11",
     "@types/react": "^19.0.12",
@@ -23,13 +31,7 @@
     "typescript": "^5.0.0",
     "vite": "^6.2.2",
     "vite-plugin-singlefile": "^2.2.0",
-    "@codemirror/commands": "^6.8.1",
-    "@codemirror/lang-json": "^6.0.1",
-    "@codemirror/language": "^6.11.0",
-    "@codemirror/lint": "^6.8.5",
-    "@codemirror/state": "^6.5.2",
-    "@codemirror/view": "^6.36.5",
-    "@lezer/highlight": "^1.2.1"
+    "vitest": "^3.1.1"
   },
   "repository": "git@github.com:ilimei/mock-api-extension.git"
 }

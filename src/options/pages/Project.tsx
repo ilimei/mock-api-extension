@@ -270,8 +270,8 @@ const Project: React.FC = () => {
     }
   };
 
-  const handleDeleteProject = async (e: React.MouseEvent, project: ProjectType) => {
-    e.stopPropagation(); // Prevent card click event
+  const handleDeleteProject = async (e: React.MouseEvent | undefined, project: ProjectType) => {
+    e?.stopPropagation(); // Prevent card click event
     
     try {
       await mockDataManager.deleteProject(project.id);
