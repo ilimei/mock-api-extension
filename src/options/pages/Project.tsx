@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { List, Card, Button, Form, Empty, Typography, Space, Switch, message, Tooltip, Popconfirm } from 'antd';
-import { PlusOutlined, ImportOutlined, ExportOutlined, DeleteOutlined } from '@ant-design/icons';
+import { PlusOutlined, ImportOutlined, ExportOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 import mockDataManager, { IProject as ProjectType } from '../../common/mockDataManagerClient';
 import ProjectForm from '../components/ProjectForm';
@@ -362,13 +362,14 @@ const Project: React.FC = () => {
                         />
                       </Popconfirm>
                     </Tooltip>
-                    <Button
-                      type="text"
-                      size="small"
-                      onClick={(e) => handleEditProject(e, project)}
-                    >
-                      Edit
-                    </Button>
+                    <Tooltip title="Edit project">
+                      <Button
+                        type="text"
+                        size="small"
+                        icon={<EditOutlined />}
+                        onClick={(e) => handleEditProject(e, project)}
+                      />
+                    </Tooltip>
                   </Space>
                 }
               >
