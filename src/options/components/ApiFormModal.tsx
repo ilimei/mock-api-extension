@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Select, Switch } from 'antd';
 import { HTTP_STATUS_CODES } from '../../constants/httpStatusCodes';
+import JsonEditor from './JsonEditor'; // Import the JsonEditor component
 
 interface ApiFormModalProps {
   title: string;
@@ -118,7 +119,7 @@ const ApiFormModal: React.FC<ApiFormModalProps> = ({
             }
           ]}
         >
-          <Input.TextArea rows={6} placeholder='{ "message": "Success" }' />
+          <JsonEditor placeholder='{ "message": "Success" }' />
         </Form.Item>
 
         <Form.Item

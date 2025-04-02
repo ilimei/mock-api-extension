@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { EditorState, Extension } from '@codemirror/state';
-import { EditorView, lineNumbers, keymap } from '@codemirror/view';
+import { EditorView, lineNumbers, keymap, placeholder } from '@codemirror/view';
 import { json } from '@codemirror/lang-json';
 import { defaultKeymap, indentWithTab } from '@codemirror/commands';
 import { syntaxHighlighting, HighlightStyle } from '@codemirror/language';
@@ -19,7 +19,7 @@ interface JsonEditorAction {
 }
 
 interface JsonEditorProps {
-  value: string;
+  value?: string;
   onChange?: (value: string) => void;
   height?: string;
   readOnly?: boolean;
@@ -27,6 +27,7 @@ interface JsonEditorProps {
   className?: string;
   actions?: JsonEditorAction[];
   hideDefaultToolbar?: boolean;
+  placeholder?: string;
 }
 
 // @ts-expect-error not error
@@ -64,18 +65,19 @@ const jsonHighlighting = HighlightStyle.define([
 ]);
 
 const JsonEditor: React.FC<JsonEditorProps> = ({
-  value,
+  value = '',
   onChange,
   height = '300px',
   readOnly = false,
   autoFormat = true,
   className = '',
   actions = [],
-  hideDefaultToolbar = false
+  hideDefaultToolbar = false,
+  placeholder: placeholderText,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
-  const [currentValue, setCurrentValue] = useState(value);
+  const [currentValue, setCurrentValue] = useState(value || '');
   const [isValidJson, setIsValidJson] = useState(true);
 
   const validateJson = (jsonString: string): boolean => {
@@ -99,6 +101,8 @@ const JsonEditor: React.FC<JsonEditorProps> = ({
       lintGutter(),
       jsonLinter,
       keymap.of([...defaultKeymap, indentWithTab]),
+      // Add placeholder extension if specified
+      placeholderText ? placeholder(placeholderText) : [],
       EditorView.updateListener.of(update => {
         if (update.docChanged) {
           const newValue = update.state.doc.toString();
