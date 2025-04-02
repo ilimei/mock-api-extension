@@ -3,6 +3,34 @@ import type { IProject } from '@/common/mockDataManagerClient';
 import { Server } from '@/common/request';
 import mockDataManager from '@/background/mockDataManager';
 import { matchPath } from '@/common/utils';
+// @ts-expect-error not error
+import { Interpreter } from './acron_interpreter';
+
+function toPlainObject(obj: any) {
+  if (typeof obj === 'object' && obj.class) {
+    if (obj.class === 'Object') {
+      const ret = {} as any;
+      for (const key in obj.properties) {
+        ret[key] = toPlainObject(obj.properties[key]);
+      }
+      return ret;
+    }
+    if (obj.class === 'Array') {
+      const ret = [] as any;
+      for (const key in obj.properties) {
+        ret[key] = toPlainObject(obj.properties[key]);
+      }
+      return ret;
+    }
+  }
+  return obj;
+}
+
+function evalJS(code: string) {
+  var myInterpreter = new Interpreter('(function() {' + code + '})()');
+  myInterpreter.run();
+  return toPlainObject(myInterpreter.value);
+}
 
 class BackgroundServer extends Server implements IExtensionApi {
   ctx = {
@@ -158,9 +186,16 @@ class BackgroundServer extends Server implements IExtensionApi {
     const api = apis.find(api => matchPath(api.path, requestUrl.pathname) && api.method === method);
 
     if (api) {
+      let body = null;
+      if (api.responseBodyType === 'javascript' && api.code) {
+        body = evalJS(api.code);
+      } else {
+        body = JSON.parse(api.responseBody);
+      }
+
       return {
         mock: true,
-        data: JSON.parse(api.responseBody),
+        data: body,
         status: api.statusCode,
         headers: {
           'Content-Type': 'application/json',

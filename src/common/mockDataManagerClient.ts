@@ -17,6 +17,8 @@ export interface MockApi {
   statusCode: number;
   delay: number;
   responseBody: string;
+  responseBodyType: 'json' | 'javascript';
+  code?: string;
   enabled: boolean;
   createdAt: number;
 }

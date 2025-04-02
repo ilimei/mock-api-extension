@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Modal, Form, Input, Select, Switch } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Modal, Form, Input, Select, Switch, Tabs } from 'antd';
 import { HTTP_STATUS_CODES } from '../../constants/httpStatusCodes';
 import JsonEditor from './JsonEditor'; // Import the JsonEditor component
 
@@ -21,20 +21,25 @@ const ApiFormModal: React.FC<ApiFormModalProps> = ({
   okText
 }) => {
   const [form] = Form.useForm();
+  const [activeTab, setActiveTab] = useState('json');
 
   useEffect(() => {
     if (visible) {
       if (initialValues) {
         form.setFieldsValue(initialValues);
+        setActiveTab(initialValues.responseBodyType || 'json');
       } else {
         form.resetFields();
         form.setFieldsValue({
           method: 'GET',
           responseStatus: 200,
           responseBody: JSON.stringify({ message: "Success" }, null, 2),
+          responseBodyType: 'json',
+          responseBodyScript: '// Return a JavaScript object\nreturn {\n  message: "Dynamic Success",\n  timestamp: new Date().toISOString()\n};',
           delay: 0,
           enabled: true
         });
+        setActiveTab('json');
       }
     }
   }, [visible, initialValues, form]);
@@ -42,6 +47,7 @@ const ApiFormModal: React.FC<ApiFormModalProps> = ({
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
+      values.responseBodyType = activeTab; // Include the active tab in form values
       onSave(values);
     } catch (error) {
       console.error('Validation failed:', error);
@@ -100,26 +106,68 @@ const ApiFormModal: React.FC<ApiFormModalProps> = ({
           </Select>
         </Form.Item>
 
-        <Form.Item
-          name="responseBody"
-          label="Response Body (JSON)"
-          rules={[
-            { required: true, message: 'Please enter a response body' },
-            {
-              validator: (_, value) => {
-                try {
-                  if (value) {
-                    JSON.parse(value);
-                  }
-                  return Promise.resolve();
-                } catch (error) {
-                  return Promise.reject('Please enter valid JSON');
-                }
-              }
-            }
-          ]}
-        >
-          <JsonEditor placeholder='{ "message": "Success" }' />
+        <Form.Item name="responseBodyType" hidden>
+          <Input />
+        </Form.Item>
+
+        <Form.Item label="Response Body" required>
+          <Tabs 
+            activeKey={activeTab} 
+            onChange={(key) => {
+              setActiveTab(key);
+              form.setFieldsValue({ responseBodyType: key });
+            }}
+            items={[
+              {
+                key: 'json',
+                label: 'JSON',
+                children: (
+                  <Form.Item
+                    name="responseBody"
+                    noStyle
+                    rules={[
+                      { required: activeTab === 'json', message: 'Please enter a response body' },
+                      {
+                        validator: (_, value) => {
+                          if (activeTab !== 'json') return Promise.resolve();
+                          try {
+                            if (value) {
+                              JSON.parse(value);
+                            }
+                            return Promise.resolve();
+                          } catch (error) {
+                            return Promise.reject('Please enter valid JSON');
+                          }
+                        }
+                      }
+                    ]}
+                  >
+                    <JsonEditor hideDefaultToolbar placeholder='{ "message": "Success" }' />
+                  </Form.Item>
+                ),
+              },
+              {
+                key: 'javascript',
+                label: 'JavaScript',
+                children: (
+                  <Form.Item
+                    name="code"
+                    noStyle
+                    rules={[
+                      { required: activeTab === 'javascript', message: 'Please enter JavaScript code' },
+                    ]}
+                  >
+                    <JsonEditor hideDefaultToolbar language="javascript" placeholder="// Write JavaScript code that returns a value
+// Example:
+return {
+  message: 'Dynamic response',
+  timestamp: new Date().toISOString()
+};" />
+                  </Form.Item>
+                ),
+              },
+            ]}
+          />
         </Form.Item>
 
         <Form.Item
