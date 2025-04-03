@@ -63,7 +63,6 @@ window.XMLHttpRequest = function () {
 
   let requestUrl = '';
   let requestMethod = '';
-  let requestBody: any = null;
   let abort = false;
 
   // 覆盖 open 方法来捕获 URL 和方法
@@ -80,7 +79,6 @@ window.XMLHttpRequest = function () {
 
   // 覆盖 send 方法来拦截请求
   xhr.send = function (body?: any) {
-    requestBody = body;
 
     contentApi.handleRequest({
       input: requestUrl, init: {

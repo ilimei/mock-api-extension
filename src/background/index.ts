@@ -26,8 +26,11 @@ function toPlainObject(obj: any) {
   return obj;
 }
 
-function evalJS(code: string) {
-  var myInterpreter = new Interpreter('(function() {' + code + '})()');
+function evalJS(code: string, ctx: {
+  queries: Record<string, string>;
+  body: any;
+}) {
+  var myInterpreter = new Interpreter('(function(ctx) {' + code + '})(' + JSON.stringify(ctx) + ')');
   myInterpreter.run();
   return toPlainObject(myInterpreter.value);
 }
@@ -188,7 +191,10 @@ class BackgroundServer extends Server implements IExtensionApi {
     if (api) {
       let body = null;
       if (api.responseBodyType === 'javascript' && api.code) {
-        body = evalJS(api.code);
+        body = evalJS(api.code, {
+          queries: Object.fromEntries(requestUrl.searchParams.entries()),
+          body: typeof data.init?.body === 'string' ? data.init.body : undefined,
+        });
       } else {
         body = JSON.parse(api.responseBody);
       }
